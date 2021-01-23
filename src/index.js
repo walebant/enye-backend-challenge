@@ -26,7 +26,7 @@ app.use((req, res, next) => {
       log.error(`
     METHOD - [${req.method}]
     URL - [${req.originalUrl}]
-    STATUS - [${req.statusCode}]`);
+    STATUS - [${res.statusCode}]`);
     }
   });
 
