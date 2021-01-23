@@ -1,52 +1,21 @@
+const consola = require('consola');
+
 const getTimeStamp = () => new Date().toDateString();
 
-const info = (namespace, message, object) => {
-  if (object) {
-    return console.info(
-      `[${getTimeStamp()}] [INFO] [${namespace}] ${message}`,
-      object
-    );
-  }
-
-  return console.info(`[${getTimeStamp()}] [INFO] [${namespace}] ${message}`);
+const success = message => {
+  consola.success(`[${getTimeStamp()}] ${message}`);
 };
 
-const warn = (namespace, message, object) => {
-  if (object) {
-    return console.warn(
-      `[${getTimeStamp()}] [WARN] [${namespace}] ${message}`,
-      object
-    );
-  }
-
-  return console.warn(`[${getTimeStamp()}] [WARN] [${namespace}] ${message}`);
+const info = message => {
+  consola.info(`[${getTimeStamp()}] ${message}`);
 };
 
-const error = (namespace, message, object) => {
-  if (object) {
-    return console.error(
-      `[${getTimeStamp()}] [ERROR] [${namespace}] ${message}`,
-      object
-    );
-  }
-
-  return console.error(`[${getTimeStamp()}] [ERROR] [${namespace}] ${message}`);
-};
-
-const debug = (namespace, message, object) => {
-  if (object) {
-    return console.debug(
-      `[${getTimeStamp()}] [DEBUG] [${namespace}] ${message}`,
-      object
-    );
-  }
-
-  return console.debug(`[${getTimeStamp()}] [DEBUG] [${namespace}] ${message}`);
+const error = message => {
+  consola.error(`[${getTimeStamp()}] ${message}`);
 };
 
 module.exports = {
+  success,
   info,
-  warn,
   error,
-  debug,
 };

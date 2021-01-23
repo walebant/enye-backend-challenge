@@ -1,13 +1,9 @@
 const http = require('http');
 const log = require('./config/logs');
 const express = require('express');
-const dotenv = require('dotenv');
 const ratesRouter = require('./routes/ratesRouter');
 
-dotenv.config();
 const app = express();
-
-const NAMESPACE = 'Server';
 
 /** Parse the request */
 app.use(express.urlencoded({ extended: false }));
@@ -15,33 +11,24 @@ app.use(express.json());
 
 /** Logging the request */
 app.use((req, res, next) => {
-  log.info(
-    NAMESPACE,
-    `METHOD - [${req.method}], URL - [${req.url}], IP [${req.socket.remoteAddress}]`
-  );
+  log.info(`
+    METHOD - [${req.method}] 
+    URL - [${req.url}]
+    `);
 
   res.on('finish', () => {
-    log.info(
-      NAMESPACE,
-      `METHOD - [${req.method}], URL - [${req.url}], IP [${req.socket.remoteAddress}], STATUS [${req.statusCode}]`
-    );
+    log.success(`
+    METHOD - [${req.method}]
+    URL - [${req.originalUrl}]
+    STATUS - [${res.statusCode}]`);
   });
 
-  next();
-});
-
-/** Rules of our API */
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-  );
-
-  if (req.method == 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', 'GET');
-    return res.status(200).json({});
-  }
+  req.on('error', () => {
+    log.error(`
+    METHOD - [${req.method}]
+    URL - [${req.originalUrl}]
+    STATUS - [${req.statusCode}]`);
+  });
 
   next();
 });
@@ -50,10 +37,16 @@ app.use((req, res, next) => {
 app.use('/api/rates', ratesRouter);
 
 /** Error handling */
-app.use((_req, res) => {
-  const error = new Error('Not found');
-
-  res.status(404).json({
+app.use((req, res) => {
+  const error = new Error('Error completing request.');
+  if (req.method !== 'GET') {
+    return res.status(405).json({
+      message: 'Method not allowed',
+      method: req.method,
+      status: 405,
+    });
+  }
+  return res.status(500).json({
     message: error.message,
   });
 });
@@ -62,5 +55,5 @@ const httpServer = http.createServer(app);
 
 const port = 4000;
 httpServer.listen(port, () =>
-  log.info(NAMESPACE, `Server is running at http://localhost:${port}`)
+  log.success(`Server is running at http://localhost:${port}`)
 );
