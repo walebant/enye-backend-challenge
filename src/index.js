@@ -17,17 +17,17 @@ app.use((req, res, next) => {
     `);
 
   res.on('finish', () => {
-    log.success(`
-    METHOD - [${req.method}]
-    URL - [${req.originalUrl}]
-    STATUS - [${res.statusCode}]`);
-  });
-
-  req.on('error', () => {
-    log.error(`
+    if (req.method === 'GET') {
+      log.success(`
+      METHOD - [${req.method}]
+      URL - [${req.originalUrl}]
+      STATUS - [${res.statusCode}]`);
+    } else {
+      log.error(`
     METHOD - [${req.method}]
     URL - [${req.originalUrl}]
     STATUS - [${req.statusCode}]`);
+    }
   });
 
   next();
@@ -39,6 +39,7 @@ app.use('/api/rates', ratesRouter);
 /** Error handling */
 app.use((req, res) => {
   const error = new Error('Error completing request.');
+
   if (req.method !== 'GET') {
     return res.status(405).json({
       message: 'Method not allowed',
